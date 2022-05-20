@@ -4,7 +4,7 @@ public class Levels : MonoBehaviour
 {
     private UiManager ui;
     private GameManager game;
-    private int maxLevel = 201;
+    private int maxLevel = 1;
     private int maxLevelBonus = 8;
     public float playerAngleZBegin;
     public float playerAngleZRunTime;
@@ -68,8 +68,9 @@ public class Levels : MonoBehaviour
         else
         {
             if (ui.activeBonusLevel) randomLevel = Random.Range(1, maxLevelBonus);
-            else randomLevel = Random.Range(10, maxLevel);
-            PlayerPrefs.SetInt("randomLevel", randomLevel);
+            else randomLevel = Random.Range(1, maxLevel);
+            PlayerPrefs.SetInt("randomLevel", 1);
+            //PlayerPrefs.SetInt("randomLevel", randomLevel);
         }
         if (ui.activeBonusLevel) file = $"Bonuses/Level_{randomLevel}";
         else file = $"Levels/Level_{randomLevel}";

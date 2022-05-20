@@ -10,10 +10,10 @@ public class BulletData : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (transform.position.x < -4f) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
-        if (transform.position.x > 4f) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
+        if (transform.position.x < -11f) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
+        if (transform.position.x > 11f) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
         if (transform.position.y < -3f) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
-        if (transform.position.y > 10) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
+        if (transform.position.y > 8) Lean.Pool.LeanGameObjectPool.Destroy(gameObject);
         if (i < ListOfPoints.Length)
         {
             transform.position = Vector3.MoveTowards(transform.position, ListOfPoints[i], 15 * Time.deltaTime);

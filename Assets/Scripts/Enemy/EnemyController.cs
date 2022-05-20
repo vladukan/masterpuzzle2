@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Linq;
-public class PlayerController : MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
     public float direction = 1f;
     public bool UiStore = false;
@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     public Levels levels;
     private UiManager ui;
     public string idBullet;
-    public int countBullets = 3;
     public float LazerMaxLength = 10;
     public int LazerReflections = 10;
     private Camera cameraMain;
@@ -29,13 +28,6 @@ public class PlayerController : MonoBehaviour
     {
         levels = FindObjectOfType<Levels>();
         ui = FindObjectOfType<UiManager>();
-        if (transform.tag == "Player")
-        {
-            if (leftArmWork) levels.playerAngleZBegin = leftArm.transform.localEulerAngles.y;
-            if (RightArmWork) levels.playerAngleZBegin = RightArm.transform.localEulerAngles.y;
-            levels.LazerMaxLength = LazerMaxLength;
-            levels.LazerReflections = LazerReflections;
-        }
     }
     void Start()
     {
@@ -63,42 +55,7 @@ public class PlayerController : MonoBehaviour
             LeftGun.SetActive(false);
             GetComponent<Animator>().enabled = true;
         }
-    }
-    void OnEnable()
-    {
-        Lean.Touch.LeanTouch.OnFingerDown += HandleFingerDown;
-        Lean.Touch.LeanTouch.OnFingerUp += HandleFingerUp;
-        Lean.Touch.LeanTouch.OnFingerUpdate += HandleFingerUpdate;
-    }
-    void OnDisable()
-    {
-        Lean.Touch.LeanTouch.OnFingerDown -= HandleFingerDown;
-        Lean.Touch.LeanTouch.OnFingerUp -= HandleFingerUp;
-        Lean.Touch.LeanTouch.OnFingerUpdate -= HandleFingerUpdate;
-    }
-    void HandleFingerDown(Lean.Touch.LeanFinger finger)
-    {
-        if (UiStore || ui.gameMenu.activeSelf || isKill) return;
-        if (isEmpty)
-        {
-            active = false;
-            return;
-        }
-        isUpdate = true;
-        isDown = true;
-        active = true;
-    }
-    void HandleFingerUp(Lean.Touch.LeanFinger finger)
-    {
-        if (!isDown) return;
-        isUpdate = false;
-        if (isEmpty || isKill) return;
-        Shoot();
-    }
-    void HandleFingerUpdate(Lean.Touch.LeanFinger finger)
-    {
-        if (isUpdate) MoveArm();
-    }
+    } 
     private void MoveArm()
     {
         if (isCollision) active = false; else active = true;
@@ -119,7 +76,6 @@ public class PlayerController : MonoBehaviour
     }
     public void Shoot()
     {
-        //if (time - beginTime < 0.03f) return;
         if (ui.storeScreen.activeSelf ||
         ui.gameMenu.activeSelf ||
         ui.levelFailPanel.activeSelf ||
@@ -127,8 +83,9 @@ public class PlayerController : MonoBehaviour
         ui.outOfAmmoMenu.activeSelf ||
         ui.giftMenu.activeSelf ||
         ui.levelCompletedPanel.activeSelf || isEmpty) return;
-        PlayerBullets += OnChangeBullets;
-        OnChangeBullets(countBullets);
+        if (isCollision) return;
+        if (RightArmWork) sendbullet(RightGun);
+        if (leftArmWork) sendbullet(LeftGun);
     }
     public void sendbullet(GameObject gun)
     {
@@ -148,15 +105,6 @@ public class PlayerController : MonoBehaviour
         bullet.GetComponent<BulletData>().ListOfPoints = arr;
         bullet.transform.SetParent(transform);
         if (AudioManager.instance) AudioManager.instance.Play("Bullet");
-    }
-    public void DanceForWin()
-    {
-        refbotpostions();
-        GetComponent<Animator>().enabled = true;
-        GetComponent<Animator>().SetTrigger("Dance");
-        LeftGun.SetActive(false);
-        RightGun.SetActive(false);
-        active = false;
     }
     public void XandYofPresent(GameObject workingarm)
     {
@@ -192,20 +140,5 @@ public class PlayerController : MonoBehaviour
         rrr.transform.GetChild(0).GetChild(0).transform.localEulerAngles =
             RRR.transform.GetChild(0).GetChild(0).transform.localEulerAngles;
     }
-    private void CheckEnemies()
-    {
-        if (ui.activeBonusLevel && !ui.pause)
-        {
-            ui.LevelBonusCompleted();
-            return;
-        }
-        if (GameObject.FindGameObjectsWithTag("Enemy").Length > 0 && isEmpty)
-            UiManager.Instance.OutOfAmmo();
-    }
-    private void OnChangeBullets(int bullets)
-    {
-        if (isCollision) return;
-        if (RightArmWork) sendbullet(RightGun);
-        if (leftArmWork) sendbullet(LeftGun);
-    }
+    
 }
